@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#define REMIND_TEXT_HUD_SIZE_EXPAND 15
+
 typedef NS_ENUM(NSUInteger, BKActivityIndicatorStyle) {
     BKSlideMenuViewTitleWidthStyleScale = 0,               // 变小
     BKSlideMenuViewTitleWidthStyleOpacity                  // 变透明

@@ -24,6 +24,12 @@
     [button setBackgroundColor:[UIColor redColor]];
     [button addTarget:self action:@selector(aaa) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:button];
+    
+    UIButton * button1 = [UIButton buttonWithType:UIButtonTypeCustom];
+    button1.frame = CGRectMake(100, 250, 100, 100);
+    [button1 setBackgroundColor:[UIColor redColor]];
+    [button1 addTarget:self action:@selector(bbb) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button1];
 }
 
 -(void)aaa
@@ -35,6 +41,13 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [[BKActivityIndicatorHUD HUD] hideHUD];
     });
+}
+
+-(void)bbb
+{
+    NSLog(@"2");
+    
+    [[BKActivityIndicatorHUD HUD] showRemindTextHUDWithText:@"哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈"];
 }
 
 - (void)didReceiveMemoryWarning {

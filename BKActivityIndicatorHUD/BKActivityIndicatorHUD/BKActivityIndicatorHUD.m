@@ -35,7 +35,7 @@
     replicatorLayer = [CAReplicatorLayer layer];
     replicatorLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
     replicatorLayer.position = view.center;
-    replicatorLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6f].CGColor;
+    replicatorLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
     replicatorLayer.cornerRadius = replicatorLayer.bounds.size.width/10.0f;
     replicatorLayer.masksToBounds = YES;
     [view.layer addSublayer:replicatorLayer];
@@ -99,22 +99,40 @@
 {
     UIView * view = [self getCurrentVC].view;
     
-    CATextLayer * textLary = [CATextLayer layer];
-    textLary.string = text;
-    textLary.fontSize = 13.0*[UIScreen mainScreen].bounds.size.width/320.0f;
+    UIView * bgView = [[UIView alloc]init];
+    bgView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75];
+    bgView.layer.cornerRadius = 4.0f;
+    bgView.clipsToBounds = YES;
+    [view addSubview:bgView];
     
-    CGFloat width = [self sizeWithString:text UIHeight:view.bounds.size.height font:textLary.fontSize].width;
+    UILabel * remindLab = [[UILabel alloc]init];
+    remindLab.textColor = [UIColor whiteColor];
+    CGFloat fontSize = 13.0*view.bounds.size.width/320.0f;
+    UIFont *font = [UIFont systemFontOfSize:fontSize];
+    remindLab.font = font;
+    remindLab.textAlignment = NSTextAlignmentCenter;
+    remindLab.numberOfLines = 0;
+    remindLab.backgroundColor = [UIColor clearColor];
+    remindLab.text = text;
+    [bgView addSubview:remindLab];
+    
+    CGFloat width = [self sizeWithString:text UIHeight:view.bounds.size.height font:font].width;
     if (width>view.bounds.size.width/4.0*3.0f) {
         width = view.bounds.size.width/4.0*3.0f;
     }
-    CGFloat height = [self sizeWithString:text UIWidth:width font:textLary.fontSize].height;
+    CGFloat height = [self sizeWithString:text UIWidth:width font:font].height;
     
-    textLary.bounds = CGRectMake(0, 0, width, height);
-    textLary.position = CGPointMake(view.bounds.size.width/2.0f, view.bounds.size.height/2.0f);
-    textLary.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6f].CGColor;
-    textLary.cornerRadius = textLary.bounds.size.width/10.0f;
-    textLary.masksToBounds = YES;
-    [view.layer addSublayer:textLary];
+    bgView.bounds = CGRectMake(0, 0, width+REMIND_TEXT_HUD_SIZE_EXPAND, height+REMIND_TEXT_HUD_SIZE_EXPAND);
+    bgView.layer.position = CGPointMake(view.bounds.size.width/2.0f, view.bounds.size.height/2.0f);
+    
+    remindLab.bounds = CGRectMake(0, 0, width, height);
+    remindLab.layer.position = CGPointMake(bgView.bounds.size.width/2.0f, bgView.bounds.size.height/2.0f);
+    
+    [UIView animateWithDuration:1 delay:1 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        bgView.alpha = 0;
+    } completion:^(BOOL finished) {
+        [bgView removeFromSuperview];
+    }];
 }
 
 - (UIViewController *)getCurrentVC
@@ -146,21 +164,21 @@
     return result;
 }
 
--(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(CGFloat)fontSize
+-(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(UIFont*)font
 {
     CGRect rect = [string boundingRectWithSize:CGSizeMake(width, MAXFLOAT)
-                                       options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
-                                    attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:fontSize]}
+                                       options: NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading | NSStringDrawingUsesDeviceMetrics
+                                    attributes:@{NSFontAttributeName: font}
                                        context:nil];
     
     return rect.size;
 }
 
--(CGSize)sizeWithString:(NSString *)string UIHeight:(CGFloat)height font:(CGFloat)fontSize
+-(CGSize)sizeWithString:(NSString *)string UIHeight:(CGFloat)height font:(UIFont*)font
 {
     CGRect rect = [string boundingRectWithSize:CGSizeMake(MAXFLOAT, height)
-                                       options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
-                                    attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:fontSize]}
+                                       options: NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading | NSStringDrawingUsesDeviceMetrics
+                                    attributes:@{NSFontAttributeName: font}
                                        context:nil];
     
     return rect.size;
