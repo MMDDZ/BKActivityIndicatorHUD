@@ -27,12 +27,13 @@
     return sharedAccountManagerInstance;
 }
 
--(void)showActivityIndicatorWithType:(BKActivityIndicatorStyle)style inView:(UIView*)view
+-(void)showActivityIndicatorWithType:(BKActivityIndicatorStyle)style
 {
+    UIView * view = [self getCurrentVC].view;
     view.userInteractionEnabled = NO;
     
     replicatorLayer = [CAReplicatorLayer layer];
-    replicatorLayer.bounds = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width/4.0f, [UIScreen mainScreen].bounds.size.width/4.0f);
+    replicatorLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
     replicatorLayer.position = view.center;
     replicatorLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6f].CGColor;
     replicatorLayer.cornerRadius = replicatorLayer.bounds.size.width/10.0f;
@@ -85,8 +86,9 @@
     }
 }
 
--(void)hideHUDInView:(UIView*)view
+-(void)hideHUD
 {
+    UIView * view = [self getCurrentVC].view;
     view.userInteractionEnabled = YES;
     
     [replicatorLayer removeAllAnimations];
@@ -95,7 +97,73 @@
 
 -(void)showRemindTextHUDWithText:(NSString *)text
 {
+    UIView * view = [self getCurrentVC].view;
     
+    CATextLayer * textLary = [CATextLayer layer];
+    textLary.string = text;
+    textLary.fontSize = 13.0*[UIScreen mainScreen].bounds.size.width/320.0f;
+    
+    CGFloat width = [self sizeWithString:text UIHeight:view.bounds.size.height font:textLary.fontSize].width;
+    if (width>view.bounds.size.width/4.0*3.0f) {
+        width = view.bounds.size.width/4.0*3.0f;
+    }
+    CGFloat height = [self sizeWithString:text UIWidth:width font:textLary.fontSize].height;
+    
+    textLary.bounds = CGRectMake(0, 0, width, height);
+    textLary.position = CGPointMake(view.bounds.size.width/2.0f, view.bounds.size.height/2.0f);
+    textLary.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6f].CGColor;
+    textLary.cornerRadius = textLary.bounds.size.width/10.0f;
+    textLary.masksToBounds = YES;
+    [view.layer addSublayer:textLary];
+}
+
+- (UIViewController *)getCurrentVC
+{
+    UIViewController *result = nil;
+    
+    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    if (window.windowLevel != UIWindowLevelNormal)
+    {
+        NSArray *windows = [[UIApplication sharedApplication] windows];
+        for(UIWindow * tmpWin in windows)
+        {
+            if (tmpWin.windowLevel == UIWindowLevelNormal)
+            {
+                window = tmpWin;
+                break;
+            }
+        }
+    }
+    
+    UIView *frontView = [[window subviews] objectAtIndex:0];
+    id nextResponder = [frontView nextResponder];
+    
+    if ([nextResponder isKindOfClass:[UIViewController class]])
+        result = nextResponder;
+    else
+        result = window.rootViewController;
+    
+    return result;
+}
+
+-(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(CGFloat)fontSize
+{
+    CGRect rect = [string boundingRectWithSize:CGSizeMake(width, MAXFLOAT)
+                                       options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
+                                    attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:fontSize]}
+                                       context:nil];
+    
+    return rect.size;
+}
+
+-(CGSize)sizeWithString:(NSString *)string UIHeight:(CGFloat)height font:(CGFloat)fontSize
+{
+    CGRect rect = [string boundingRectWithSize:CGSizeMake(MAXFLOAT, height)
+                                       options: NSStringDrawingUsesFontLeading  |NSStringDrawingUsesLineFragmentOrigin
+                                    attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:fontSize]}
+                                       context:nil];
+    
+    return rect.size;
 }
 
 @end

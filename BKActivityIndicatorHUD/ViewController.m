@@ -30,10 +30,10 @@
 {
     NSLog(@"1");
     
-    [[BKActivityIndicatorHUD HUD] showActivityIndicatorWithType:BKSlideMenuViewTitleWidthStyleOpacity inView:self.view];
+    [[BKActivityIndicatorHUD HUD] showActivityIndicatorWithType:BKSlideMenuViewTitleWidthStyleOpacity];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[BKActivityIndicatorHUD HUD] hideHUDInView:self.view];
+        [[BKActivityIndicatorHUD HUD] hideHUD];
     });
 }
 

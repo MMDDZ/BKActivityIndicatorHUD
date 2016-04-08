@@ -18,9 +18,9 @@ typedef NS_ENUM(NSUInteger, BKActivityIndicatorStyle) {
 
 +(instancetype)HUD;
 
--(void)showActivityIndicatorWithType:(BKActivityIndicatorStyle)style inView:(UIView*)view;
+-(void)showActivityIndicatorWithType:(BKActivityIndicatorStyle)style;
 
--(void)hideHUDInView:(UIView*)view;
+-(void)hideHUD;
 
 -(void)showRemindTextHUDWithText:(NSString*)text;
 
