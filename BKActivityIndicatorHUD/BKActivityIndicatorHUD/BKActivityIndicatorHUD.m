@@ -7,14 +7,20 @@
 //
 
 #import "BKActivityIndicatorHUD.h"
+#import <CoreText/CoreText.h>
 
 @interface BKActivityIndicatorHUD()
 {
     CAReplicatorLayer *replicatorLayer;
+    CALayer * dotLayer;
+    CALayer * bgLayer;
+    CAShapeLayer * circleShapeLayer;
+    CAShapeLayer * textShapeLayer;
 }
 @end
 
 @implementation BKActivityIndicatorHUD
+@synthesize activityIndicatorStyle = _activityIndicatorStyle;
 
 + (instancetype)HUD
 {
@@ -32,6 +38,30 @@
     UIView * view = [self getCurrentVC].view;
     view.userInteractionEnabled = NO;
     
+    switch (style) {
+        case BKActivityIndicatorStyleScale:
+        case BKActivityIndicatorStyleOpacity:
+        {
+            [self initReplicatorLayer];
+        }
+            break;
+        case BKActivityIndicatorStyleLoading:
+        {
+            [self initShapeLayer];
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+#pragma mark - ReplicatorLayer
+//*********************************************************
+
+-(void)initReplicatorLayer
+{
+    UIView * view = [self getCurrentVC].view;
+    
     replicatorLayer = [CAReplicatorLayer layer];
     replicatorLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
     replicatorLayer.position = view.center;
@@ -40,7 +70,7 @@
     replicatorLayer.masksToBounds = YES;
     [view.layer addSublayer:replicatorLayer];
     
-    CALayer * dotLayer = [CALayer layer];
+    dotLayer = [CALayer layer];
     dotLayer.bounds = CGRectMake(0, 0, replicatorLayer.bounds.size.width/15.0f, replicatorLayer.bounds.size.width/15.0f);
     dotLayer.position = CGPointMake(replicatorLayer.bounds.size.width/2.0f, replicatorLayer.bounds.size.width/4.0f);
     dotLayer.cornerRadius = replicatorLayer.bounds.size.width/30.0f;
@@ -56,29 +86,15 @@
     replicatorLayer.instanceCount = count;
     replicatorLayer.instanceTransform = CATransform3DMakeRotation((2 * M_PI) / count, 0, 0, 1.0);
     
-    switch (style) {
-        case BKSlideMenuViewTitleWidthStyleScale:
+    switch (_activityIndicatorStyle) {
+        case BKActivityIndicatorStyleScale:
         {
-            CABasicAnimation * animation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
-            animation.duration = 1;
-            animation.repeatCount = MAXFLOAT;
-            animation.fromValue = @(1);
-            animation.toValue = @(0.01);
-            [dotLayer addAnimation:animation forKey:nil];
-            
-            dotLayer.transform = CATransform3DMakeScale(0, 0, 0);
+            [self scaleAnimation];
         }
             break;
-        case BKSlideMenuViewTitleWidthStyleOpacity:
+        case BKActivityIndicatorStyleOpacity:
         {
-            CABasicAnimation * animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-            animation.duration = 1;
-            animation.repeatCount = MAXFLOAT;
-            animation.fromValue = @(1);
-            animation.toValue = @(0.01);
-            [dotLayer addAnimation:animation forKey:nil];
-            
-            dotLayer.opacity = 0;
+            [self scaleAnimation];
         }
             break;
         default:
@@ -86,14 +102,151 @@
     }
 }
 
+-(void)scaleAnimation
+{
+    CABasicAnimation * animation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+    animation.duration = 1;
+    animation.repeatCount = MAXFLOAT;
+    animation.fromValue = @(1);
+    animation.toValue = @(0.01);
+    [dotLayer addAnimation:animation forKey:nil];
+    
+    dotLayer.transform = CATransform3DMakeScale(0, 0, 0);
+}
+
+-(void)opacityAnimation
+{
+    CABasicAnimation * animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    animation.duration = 1;
+    animation.repeatCount = MAXFLOAT;
+    animation.fromValue = @(1);
+    animation.toValue = @(0.01);
+    [dotLayer addAnimation:animation forKey:nil];
+    
+    dotLayer.opacity = 0;
+}
+
+#pragma mark - ShapeLayer
+//*********************************************************
+
+-(void)initShapeLayer
+{
+    UIView * view = [self getCurrentVC].view;
+    
+    bgLayer = [CALayer layer];
+    bgLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
+    bgLayer.position = view.center;
+    bgLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
+    bgLayer.cornerRadius = bgLayer.bounds.size.width/10.0f;
+    bgLayer.masksToBounds = YES;
+    [view.layer addSublayer:bgLayer];
+    
+    circleShapeLayer = [CAShapeLayer layer];
+    circleShapeLayer.frame = CGRectMake(0, 0, bgLayer.bounds.size.width, bgLayer.bounds.size.height/5.0f*3);
+    circleShapeLayer.fillColor = [UIColor clearColor].CGColor;
+    circleShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
+    circleShapeLayer.lineWidth = 2;
+    [bgLayer addSublayer:circleShapeLayer];
+    
+    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(circleShapeLayer.bounds.size.width/2.0f, circleShapeLayer.bounds.size.height/2.0f) radius:circleShapeLayer.bounds.size.width/4.0f startAngle:-M_PI_2 endAngle:2*M_PI-M_PI_2 clockwise:YES];
+    circleShapeLayer.path = path.CGPath;
+    
+    CABasicAnimation *circleAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    circleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    circleAnimation.fromValue = @(0);
+    circleAnimation.toValue = @(1);
+    circleAnimation.duration = 2;
+    circleAnimation.repeatCount = 1;
+    [circleShapeLayer addAnimation:circleAnimation forKey:nil];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        CABasicAnimation *disappearCircleAnimation = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
+        disappearCircleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        disappearCircleAnimation.fromValue = @(0);
+        disappearCircleAnimation.toValue = @(1);
+        disappearCircleAnimation.duration = 2;
+        disappearCircleAnimation.repeatCount = 1;
+        [circleShapeLayer addAnimation:disappearCircleAnimation forKey:nil];
+    });
+    
+    textShapeLayer = [CAShapeLayer layer];
+    textShapeLayer.fillColor = [UIColor clearColor].CGColor;
+    textShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
+    textShapeLayer.lineWidth = 0.5;
+    [bgLayer addSublayer:textShapeLayer];
+    
+    CABasicAnimation *textAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    textAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    textAnimation.fromValue = @(0);
+    textAnimation.toValue = @(1);
+    textAnimation.duration = 3;
+    textAnimation.repeatCount = MAXFLOAT;
+    [textShapeLayer addAnimation:textAnimation forKey:nil];
+    
+    NSMutableAttributedString *attributed = [[NSMutableAttributedString alloc] initWithString:@"loading..."];
+    CGFloat fontSize = 18.0*view.bounds.size.width/320.0f;
+    [attributed addAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:fontSize]} range:NSMakeRange(0, attributed.length)];
+    textShapeLayer.path = [self coretextPath:attributed].CGPath;
+}
+
+- (UIBezierPath *)coretextPath:(NSMutableAttributedString *)text
+{
+    CGMutablePathRef pathRef = CGPathCreateMutable();
+    CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)text);
+    CFArrayRef runArray = CTLineGetGlyphRuns(line);
+    
+    for (CFIndex runIndex = 0; runIndex < CFArrayGetCount(runArray); runIndex++)
+    {
+        CTRunRef run = (CTRunRef)CFArrayGetValueAtIndex(runArray, runIndex);
+        CTFontRef runFont = CFDictionaryGetValue(CTRunGetAttributes(run), kCTFontAttributeName);
+        
+        for (CFIndex runGlyphIndex = 0; runGlyphIndex < CTRunGetGlyphCount(run); runGlyphIndex++)
+        {
+            CFRange thisGlyphRange = CFRangeMake(runGlyphIndex, 1);
+            CGGlyph glyph;
+            CGPoint position;
+            CTRunGetGlyphs(run, thisGlyphRange, &glyph);
+            CTRunGetPositions(run, thisGlyphRange, &position);
+            CGPathRef letter = CTFontCreatePathForGlyph(runFont, glyph, NULL);
+            CGAffineTransform t = CGAffineTransformMakeTranslation(position.x, position.y);
+            CGPathAddPath(pathRef, &t, letter);
+            CGPathRelease(letter);
+        }
+    }
+    
+    UIBezierPath *path = [UIBezierPath bezierPathWithCGPath:pathRef];
+    CGRect boundingBox = CGPathGetBoundingBox(pathRef);
+    
+    CGFloat shapeLayer_width = boundingBox.size.width;
+    CGFloat shapeLayer_height = boundingBox.size.height;
+    CGFloat shapeLayer_X = (bgLayer.bounds.size.width - shapeLayer_width)/2.0f;
+    CGFloat shapeLayer_Y = bgLayer.bounds.size.height/5.0f*3 + (bgLayer.bounds.size.height/5.0f*2 - shapeLayer_height)/2.0f;
+    
+    textShapeLayer.frame = CGRectMake(shapeLayer_X, shapeLayer_Y , shapeLayer_width, shapeLayer_height);
+
+    CFRelease(pathRef);
+    CFRelease(line);
+    
+    [path applyTransform:CGAffineTransformMakeScale(1.0, -1.0)];
+    [path applyTransform:CGAffineTransformMakeTranslation(0.0, boundingBox.size.height)];
+    
+    return path;
+}
+
+#pragma mark - hideHUD
+//*********************************************************
+
 -(void)hideHUD
 {
     UIView * view = [self getCurrentVC].view;
     view.userInteractionEnabled = YES;
     
-    [replicatorLayer removeAllAnimations];
+    [dotLayer removeAllAnimations];
     [replicatorLayer removeFromSuperlayer];
 }
+
+#pragma mark - RemindTextHUD
+//*********************************************************
 
 -(void)showRemindTextHUDWithText:(NSString *)text
 {
@@ -135,6 +288,9 @@
     }];
 }
 
+#pragma mark - 获取当前界面VC
+//*********************************************************
+
 - (UIViewController *)getCurrentVC
 {
     UIViewController *result = nil;
@@ -163,6 +319,9 @@
     
     return result;
 }
+
+#pragma mark - 算高度
+//*********************************************************
 
 -(CGSize)sizeWithString:(NSString *)string UIWidth:(CGFloat)width font:(UIFont*)font
 {

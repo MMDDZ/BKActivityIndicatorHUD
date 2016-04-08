@@ -12,11 +12,14 @@
 #define REMIND_TEXT_HUD_SIZE_EXPAND 15
 
 typedef NS_ENUM(NSUInteger, BKActivityIndicatorStyle) {
-    BKSlideMenuViewTitleWidthStyleScale = 0,               // 变小
-    BKSlideMenuViewTitleWidthStyleOpacity                  // 变透明
+    BKActivityIndicatorStyleScale = 0,                // 变小
+    BKActivityIndicatorStyleOpacity,                  // 变透明
+    BKActivityIndicatorStyleLoading,                  // Loading
 };
 
 @interface BKActivityIndicatorHUD : NSObject
+
+@property (nonatomic,assign,readonly) BKActivityIndicatorStyle activityIndicatorStyle;
 
 +(instancetype)HUD;
 
