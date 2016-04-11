@@ -13,9 +13,16 @@
 {
     CAReplicatorLayer *replicatorLayer;
     CALayer * dotLayer;
-    CALayer * bgLayer;
+    
+    CALayer * shapeBgLayer;
     CAShapeLayer * circleShapeLayer;
     CAShapeLayer * textShapeLayer;
+    
+    CALayer * finishLayer;
+    CAShapeLayer * finishShapeLayer;
+    
+    CALayer * errorLayer;
+    CAShapeLayer * errorShapeLayer;
 }
 @end
 
@@ -135,20 +142,20 @@
 {
     UIView * view = [self getCurrentVC].view;
     
-    bgLayer = [CALayer layer];
-    bgLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
-    bgLayer.position = view.center;
-    bgLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
-    bgLayer.cornerRadius = bgLayer.bounds.size.width/10.0f;
-    bgLayer.masksToBounds = YES;
-    [view.layer addSublayer:bgLayer];
+    shapeBgLayer = [CALayer layer];
+    shapeBgLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
+    shapeBgLayer.position = view.center;
+    shapeBgLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
+    shapeBgLayer.cornerRadius = shapeBgLayer.bounds.size.width/10.0f;
+    shapeBgLayer.masksToBounds = YES;
+    [view.layer addSublayer:shapeBgLayer];
     
     circleShapeLayer = [CAShapeLayer layer];
-    circleShapeLayer.frame = CGRectMake(0, 0, bgLayer.bounds.size.width, bgLayer.bounds.size.height/5.0f*3);
+    circleShapeLayer.frame = CGRectMake(0, 0, shapeBgLayer.bounds.size.width, shapeBgLayer.bounds.size.height/5.0f*3);
     circleShapeLayer.fillColor = [UIColor clearColor].CGColor;
     circleShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
     circleShapeLayer.lineWidth = 2;
-    [bgLayer addSublayer:circleShapeLayer];
+    [shapeBgLayer addSublayer:circleShapeLayer];
     
     UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(circleShapeLayer.bounds.size.width/2.0f, circleShapeLayer.bounds.size.height/5.0f*3) radius:circleShapeLayer.bounds.size.width/4.0f startAngle:-M_PI_2 endAngle:2*M_PI-M_PI_2 clockwise:YES];
     circleShapeLayer.path = path.CGPath;
@@ -159,7 +166,7 @@
     textShapeLayer.fillColor = [UIColor clearColor].CGColor;
     textShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
     textShapeLayer.lineWidth = 0.5;
-    [bgLayer addSublayer:textShapeLayer];
+    [shapeBgLayer addSublayer:textShapeLayer];
     
     CABasicAnimation *textAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
     textAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
@@ -230,8 +237,8 @@
     
     CGFloat shapeLayer_width = boundingBox.size.width;
     CGFloat shapeLayer_height = boundingBox.size.height;
-    CGFloat shapeLayer_X = (bgLayer.bounds.size.width - shapeLayer_width)/2.0f;
-    CGFloat shapeLayer_Y = bgLayer.bounds.size.height/5.0f*3 + (bgLayer.bounds.size.height/5.0f*2 - shapeLayer_height)/2.0f;
+    CGFloat shapeLayer_X = (shapeBgLayer.bounds.size.width - shapeLayer_width)/2.0f;
+    CGFloat shapeLayer_Y = shapeBgLayer.bounds.size.height/5.0f*3 + (shapeBgLayer.bounds.size.height/5.0f*2 - shapeLayer_height)/2.0f;
     
     textShapeLayer.frame = CGRectMake(shapeLayer_X, shapeLayer_Y , shapeLayer_width, shapeLayer_height);
 
@@ -266,12 +273,97 @@
             [circleShapeLayer removeFromSuperlayer];
             [textShapeLayer removeAllAnimations];
             [textShapeLayer removeFromSuperlayer];
-            [bgLayer removeFromSuperlayer];
+            [shapeBgLayer removeFromSuperlayer];
         }
             break;
         default:
             break;
     }
+}
+
+#pragma mark - finishHUD
+//*********************************************************
+
+-(void)finishHUD
+{
+    [self hideHUD];
+    UIView * view = [self getCurrentVC].view;
+    view.userInteractionEnabled = NO;
+    
+    finishLayer = [CALayer layer];
+    finishLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
+    finishLayer.position = view.center;
+    finishLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
+    finishLayer.cornerRadius = finishLayer.bounds.size.width/10.0f;
+    finishLayer.masksToBounds = YES;
+    [view.layer addSublayer:finishLayer];
+    
+    finishShapeLayer = [CAShapeLayer layer];
+    finishShapeLayer.frame = finishLayer.bounds;
+    finishShapeLayer.fillColor = [UIColor clearColor].CGColor;
+    finishShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
+    finishShapeLayer.lineWidth = 2;
+    [finishLayer addSublayer:finishShapeLayer];
+    
+    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(finishShapeLayer.bounds.size.width/2.0f, finishShapeLayer.bounds.size.height/2.0f) radius:finishShapeLayer.bounds.size.width/3.0f startAngle:-M_PI_2 endAngle:2*M_PI-M_PI_2 clockwise:YES];
+    [path moveToPoint:CGPointMake(finishShapeLayer.frame.size.width/7.0f*2, finishShapeLayer.frame.size.height/9.0f*5)];
+    [path addLineToPoint:CGPointMake(finishShapeLayer.frame.size.width/7.0f*3, finishShapeLayer.frame.size.width/9.0f*6)];
+    [path addLineToPoint:CGPointMake(finishShapeLayer.frame.size.width/7.0f*5, finishShapeLayer.frame.size.width/9.0f*3)];
+    finishShapeLayer.path = path.CGPath;
+    
+    CABasicAnimation *finishAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    finishAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    finishAnimation.fromValue = @(0);
+    finishAnimation.toValue = @(1);
+    finishAnimation.duration = 1;
+    finishAnimation.repeatCount = 1;
+    finishAnimation.removedOnCompletion = NO;
+    finishAnimation.delegate = self;
+    finishAnimation.fillMode = kCAFillModeForwards;
+    [finishShapeLayer addAnimation:finishAnimation forKey:@"finishAnimation"];
+}
+
+#pragma mark - errorHUD
+//*********************************************************
+
+-(void)errorHUD
+{
+    [self hideHUD];
+    UIView * view = [self getCurrentVC].view;
+    view.userInteractionEnabled = NO;
+    
+    errorLayer = [CALayer layer];
+    errorLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
+    errorLayer.position = view.center;
+    errorLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
+    errorLayer.cornerRadius = errorLayer.bounds.size.width/10.0f;
+    errorLayer.masksToBounds = YES;
+    [view.layer addSublayer:errorLayer];
+    
+    errorShapeLayer = [CAShapeLayer layer];
+    errorShapeLayer.frame = errorLayer.bounds;
+    errorShapeLayer.fillColor = [UIColor clearColor].CGColor;
+    errorShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
+    errorShapeLayer.lineWidth = 2;
+    [errorLayer addSublayer:errorShapeLayer];
+    
+    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(errorShapeLayer.bounds.size.width/2.0f, errorShapeLayer.bounds.size.height/2.0f) radius:errorShapeLayer.bounds.size.width/3.0f startAngle:-M_PI_2 endAngle:2*M_PI-M_PI_2 clockwise:YES];
+    [path moveToPoint:CGPointMake(errorShapeLayer.frame.size.width/3.0f, errorShapeLayer.frame.size.height/3.0f)];
+    [path addLineToPoint:CGPointMake(errorShapeLayer.frame.size.width/3.0f*2, errorShapeLayer.frame.size.width/3.0f*2)];
+    [path moveToPoint:CGPointMake(errorShapeLayer.frame.size.width/3.0f*2, errorShapeLayer.frame.size.height/3.0f)];
+    [path addLineToPoint:CGPointMake(errorShapeLayer.frame.size.width/3.0f, errorShapeLayer.frame.size.width/3.0f*2)];
+    errorShapeLayer.path = path.CGPath;
+    
+    CABasicAnimation *errorAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    errorAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    errorAnimation.fromValue = @(0);
+    errorAnimation.toValue = @(1);
+    errorAnimation.duration = 1;
+    errorAnimation.repeatCount = 1;
+    errorAnimation.removedOnCompletion = NO;
+    errorAnimation.delegate = self;
+    errorAnimation.fillMode = kCAFillModeForwards;
+    [errorShapeLayer addAnimation:errorAnimation forKey:@"errorAnimation"];
 }
 
 #pragma mark - RemindTextHUD
@@ -383,6 +475,48 @@
         [circleShapeLayer removeAnimationForKey:@"disappearCircleAnimation"];
         
         [self shapeLayerCircleAnimation];
+    }else if ([finishShapeLayer animationForKey:@"finishAnimation"] == anim) {
+        
+        CABasicAnimation *disappearFinishAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        disappearFinishAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        disappearFinishAnimation.fromValue = @(1);
+        disappearFinishAnimation.toValue = @(0);
+        disappearFinishAnimation.duration = 1;
+        disappearFinishAnimation.repeatCount = 1;
+        disappearFinishAnimation.beginTime = CACurrentMediaTime() + 0.5;
+        disappearFinishAnimation.removedOnCompletion = NO;
+        disappearFinishAnimation.fillMode = kCAFillModeForwards;
+        disappearFinishAnimation.delegate = self;
+        [finishLayer addAnimation:disappearFinishAnimation forKey:@"disappearFinishAnimation"];
+    }else if ([finishLayer animationForKey:@"disappearFinishAnimation"] == anim) {
+        
+        [finishShapeLayer removeAllAnimations];
+        [finishLayer removeAllAnimations];
+        [finishLayer removeFromSuperlayer];
+        
+        UIView * view = [self getCurrentVC].view;
+        view.userInteractionEnabled = YES;
+    }else if ([errorShapeLayer animationForKey:@"errorAnimation"] == anim) {
+        
+        CABasicAnimation *disappearErrorAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        disappearErrorAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        disappearErrorAnimation.fromValue = @(1);
+        disappearErrorAnimation.toValue = @(0);
+        disappearErrorAnimation.duration = 1;
+        disappearErrorAnimation.repeatCount = 1;
+        disappearErrorAnimation.beginTime = CACurrentMediaTime() + 0.5;
+        disappearErrorAnimation.removedOnCompletion = NO;
+        disappearErrorAnimation.fillMode = kCAFillModeForwards;
+        disappearErrorAnimation.delegate = self;
+        [errorLayer addAnimation:disappearErrorAnimation forKey:@"disappearErrorAnimation"];
+    }else if ([errorLayer animationForKey:@"disappearErrorAnimation"] == anim) {
+        
+        [errorShapeLayer removeAllAnimations];
+        [errorLayer removeAllAnimations];
+        [errorLayer removeFromSuperlayer];
+        
+        UIView * view = [self getCurrentVC].view;
+        view.userInteractionEnabled = YES;
     }
 }
 
