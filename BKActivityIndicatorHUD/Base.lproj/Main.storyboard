@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -15,11 +16,70 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ki4-0T-nu3">
+                                <rect key="frame" x="278" y="70" width="45" height="30"/>
+                                <state key="normal" title="模式一"/>
+                                <connections>
+                                    <action selector="num1:" destination="BYZ-38-t0r" eventType="touchUpInside" id="e9L-x4-fqZ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Th-Qp-dp5">
+                                <rect key="frame" x="278" y="110" width="45" height="30"/>
+                                <state key="normal" title="模式二"/>
+                                <connections>
+                                    <action selector="num2:" destination="BYZ-38-t0r" eventType="touchUpInside" id="i2q-AM-yYY"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dBY-mU-h5S">
+                                <rect key="frame" x="278" y="150" width="45" height="30"/>
+                                <state key="normal" title="模式三"/>
+                                <connections>
+                                    <action selector="num3:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jgj-BZ-jBS"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F6b-aQ-71m">
+                                <rect key="frame" x="285" y="190" width="30" height="30"/>
+                                <state key="normal" title="成功"/>
+                                <connections>
+                                    <action selector="Success:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3Py-Ps-DIX"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uU4-pd-8Ky">
+                                <rect key="frame" x="285" y="230" width="30" height="30"/>
+                                <state key="normal" title="失败"/>
+                                <connections>
+                                    <action selector="error:" destination="BYZ-38-t0r" eventType="touchUpInside" id="QTl-kn-cAS"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qzv-Bj-Jr5">
+                                <rect key="frame" x="285" y="270" width="30" height="30"/>
+                                <state key="normal" title="提示"/>
+                                <connections>
+                                    <action selector="remind:" destination="BYZ-38-t0r" eventType="touchUpInside" id="N6x-o0-nvM"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="uU4-pd-8Ky" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="3Az-EQ-EnW"/>
+                            <constraint firstItem="Qzv-Bj-Jr5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="4Bv-k2-AhI"/>
+                            <constraint firstItem="Qzv-Bj-Jr5" firstAttribute="top" secondItem="uU4-pd-8Ky" secondAttribute="bottom" constant="10" id="Br9-tV-TI7"/>
+                            <constraint firstItem="F6b-aQ-71m" firstAttribute="top" secondItem="dBY-mU-h5S" secondAttribute="bottom" constant="10" id="GZq-at-okL"/>
+                            <constraint firstItem="dBY-mU-h5S" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Oox-qN-KBX"/>
+                            <constraint firstItem="dBY-mU-h5S" firstAttribute="top" secondItem="7Th-Qp-dp5" secondAttribute="bottom" constant="10" id="Tn9-RO-woi"/>
+                            <constraint firstItem="Ki4-0T-nu3" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="XA4-de-57R"/>
+                            <constraint firstItem="7Th-Qp-dp5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Xri-xA-6Ut"/>
+                            <constraint firstItem="7Th-Qp-dp5" firstAttribute="top" secondItem="Ki4-0T-nu3" secondAttribute="bottom" constant="10" id="cvS-gd-ip8"/>
+                            <constraint firstItem="Ki4-0T-nu3" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="50" id="haz-Ol-IaW"/>
+                            <constraint firstItem="F6b-aQ-71m" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="tBL-NM-YbC"/>
+                            <constraint firstItem="uU4-pd-8Ky" firstAttribute="top" secondItem="F6b-aQ-71m" secondAttribute="bottom" constant="10" id="vph-CB-ZkO"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="440" y="356"/>
         </scene>
     </scenes>
 </document>

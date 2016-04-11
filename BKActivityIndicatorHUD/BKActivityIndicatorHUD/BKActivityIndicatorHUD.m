@@ -18,8 +18,8 @@
     CAShapeLayer * circleShapeLayer;
     CAShapeLayer * textShapeLayer;
     
-    CALayer * finishLayer;
-    CAShapeLayer * finishShapeLayer;
+    CALayer * successLayer;
+    CAShapeLayer * successShapeLayer;
     
     CALayer * errorLayer;
     CAShapeLayer * errorShapeLayer;
@@ -284,43 +284,43 @@
 #pragma mark - finishHUD
 //*********************************************************
 
--(void)finishHUD
+-(void)successHUD
 {
     [self hideHUD];
     UIView * view = [self getCurrentVC].view;
     view.userInteractionEnabled = NO;
     
-    finishLayer = [CALayer layer];
-    finishLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
-    finishLayer.position = view.center;
-    finishLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
-    finishLayer.cornerRadius = finishLayer.bounds.size.width/10.0f;
-    finishLayer.masksToBounds = YES;
-    [view.layer addSublayer:finishLayer];
+    successLayer = [CALayer layer];
+    successLayer.bounds = CGRectMake(0, 0, view.bounds.size.width/4.0f, view.bounds.size.width/4.0f);
+    successLayer.position = view.center;
+    successLayer.backgroundColor = [UIColor colorWithWhite:0 alpha:0.75f].CGColor;
+    successLayer.cornerRadius = successLayer.bounds.size.width/10.0f;
+    successLayer.masksToBounds = YES;
+    [view.layer addSublayer:successLayer];
     
-    finishShapeLayer = [CAShapeLayer layer];
-    finishShapeLayer.frame = finishLayer.bounds;
-    finishShapeLayer.fillColor = [UIColor clearColor].CGColor;
-    finishShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
-    finishShapeLayer.lineWidth = 2;
-    [finishLayer addSublayer:finishShapeLayer];
+    successShapeLayer = [CAShapeLayer layer];
+    successShapeLayer.frame = successLayer.bounds;
+    successShapeLayer.fillColor = [UIColor clearColor].CGColor;
+    successShapeLayer.strokeColor = [UIColor whiteColor].CGColor;
+    successShapeLayer.lineWidth = 2;
+    [successLayer addSublayer:successShapeLayer];
     
-    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(finishShapeLayer.bounds.size.width/2.0f, finishShapeLayer.bounds.size.height/2.0f) radius:finishShapeLayer.bounds.size.width/3.0f startAngle:-M_PI_2 endAngle:2*M_PI-M_PI_2 clockwise:YES];
-    [path moveToPoint:CGPointMake(finishShapeLayer.frame.size.width/7.0f*2, finishShapeLayer.frame.size.height/9.0f*5)];
-    [path addLineToPoint:CGPointMake(finishShapeLayer.frame.size.width/7.0f*3, finishShapeLayer.frame.size.width/9.0f*6)];
-    [path addLineToPoint:CGPointMake(finishShapeLayer.frame.size.width/7.0f*5, finishShapeLayer.frame.size.width/9.0f*3)];
-    finishShapeLayer.path = path.CGPath;
+    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(successShapeLayer.bounds.size.width/2.0f, successShapeLayer.bounds.size.height/2.0f) radius:successShapeLayer.bounds.size.width/3.0f startAngle:-M_PI_2 endAngle:2*M_PI-M_PI_2 clockwise:YES];
+    [path moveToPoint:CGPointMake(successShapeLayer.frame.size.width/7.0f*2, successShapeLayer.frame.size.height/9.0f*5)];
+    [path addLineToPoint:CGPointMake(successShapeLayer.frame.size.width/7.0f*3, successShapeLayer.frame.size.width/9.0f*6)];
+    [path addLineToPoint:CGPointMake(successShapeLayer.frame.size.width/7.0f*5, successShapeLayer.frame.size.width/9.0f*3)];
+    successShapeLayer.path = path.CGPath;
     
-    CABasicAnimation *finishAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-    finishAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    finishAnimation.fromValue = @(0);
-    finishAnimation.toValue = @(1);
-    finishAnimation.duration = 1;
-    finishAnimation.repeatCount = 1;
-    finishAnimation.removedOnCompletion = NO;
-    finishAnimation.delegate = self;
-    finishAnimation.fillMode = kCAFillModeForwards;
-    [finishShapeLayer addAnimation:finishAnimation forKey:@"finishAnimation"];
+    CABasicAnimation *successAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    successAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    successAnimation.fromValue = @(0);
+    successAnimation.toValue = @(1);
+    successAnimation.duration = 1;
+    successAnimation.repeatCount = 1;
+    successAnimation.removedOnCompletion = NO;
+    successAnimation.delegate = self;
+    successAnimation.fillMode = kCAFillModeForwards;
+    [successShapeLayer addAnimation:successAnimation forKey:@"successAnimation"];
 }
 
 #pragma mark - errorHUD
@@ -475,24 +475,24 @@
         [circleShapeLayer removeAnimationForKey:@"disappearCircleAnimation"];
         
         [self shapeLayerCircleAnimation];
-    }else if ([finishShapeLayer animationForKey:@"finishAnimation"] == anim) {
+    }else if ([successShapeLayer animationForKey:@"successAnimation"] == anim) {
         
-        CABasicAnimation *disappearFinishAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-        disappearFinishAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        disappearFinishAnimation.fromValue = @(1);
-        disappearFinishAnimation.toValue = @(0);
-        disappearFinishAnimation.duration = 1;
-        disappearFinishAnimation.repeatCount = 1;
-        disappearFinishAnimation.beginTime = CACurrentMediaTime() + 0.5;
-        disappearFinishAnimation.removedOnCompletion = NO;
-        disappearFinishAnimation.fillMode = kCAFillModeForwards;
-        disappearFinishAnimation.delegate = self;
-        [finishLayer addAnimation:disappearFinishAnimation forKey:@"disappearFinishAnimation"];
-    }else if ([finishLayer animationForKey:@"disappearFinishAnimation"] == anim) {
+        CABasicAnimation *disappearSuccessAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        disappearSuccessAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        disappearSuccessAnimation.fromValue = @(1);
+        disappearSuccessAnimation.toValue = @(0);
+        disappearSuccessAnimation.duration = 1;
+        disappearSuccessAnimation.repeatCount = 1;
+        disappearSuccessAnimation.beginTime = CACurrentMediaTime() + 0.5;
+        disappearSuccessAnimation.removedOnCompletion = NO;
+        disappearSuccessAnimation.fillMode = kCAFillModeForwards;
+        disappearSuccessAnimation.delegate = self;
+        [successLayer addAnimation:disappearSuccessAnimation forKey:@"disappearSuccessAnimation"];
+    }else if ([successLayer animationForKey:@"disappearSuccessAnimation"] == anim) {
         
-        [finishShapeLayer removeAllAnimations];
-        [finishLayer removeAllAnimations];
-        [finishLayer removeFromSuperlayer];
+        [successShapeLayer removeAllAnimations];
+        [successLayer removeAllAnimations];
+        [successLayer removeFromSuperlayer];
         
         UIView * view = [self getCurrentVC].view;
         view.userInteractionEnabled = YES;

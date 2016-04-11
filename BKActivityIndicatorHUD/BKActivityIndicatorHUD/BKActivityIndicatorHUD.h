@@ -27,7 +27,7 @@ typedef NS_ENUM(NSUInteger, BKActivityIndicatorStyle) {
 
 -(void)hideHUD;
 
--(void)finishHUD;
+-(void)successHUD;
 
 -(void)errorHUD;
 

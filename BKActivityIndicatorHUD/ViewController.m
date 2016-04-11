@@ -18,35 +18,41 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    
-    UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.frame = CGRectMake(100, 100, 100, 100);
-    [button setBackgroundColor:[UIColor redColor]];
-    [button addTarget:self action:@selector(aaa) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:button];
-    
-    UIButton * button1 = [UIButton buttonWithType:UIButtonTypeCustom];
-    button1.frame = CGRectMake(100, 250, 100, 100);
-    [button1 setBackgroundColor:[UIColor redColor]];
-    [button1 addTarget:self action:@selector(bbb) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:button1];
 }
 
--(void)aaa
-{
-    NSLog(@"1");
+- (IBAction)num1:(id)sender {
+    [[BKActivityIndicatorHUD HUD] showActivityIndicatorWithType:BKActivityIndicatorStyleScale];
     
-//    [[BKActivityIndicatorHUD HUD] showActivityIndicatorWithType:BKActivityIndicatorStyleLoading];
-//    
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[BKActivityIndicatorHUD HUD] errorHUD];
-//    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[BKActivityIndicatorHUD HUD] hideHUD];
+    });
 }
 
--(void)bbb
-{
-    NSLog(@"2");
+- (IBAction)num2:(id)sender {
+    [[BKActivityIndicatorHUD HUD] showActivityIndicatorWithType:BKActivityIndicatorStyleOpacity];
     
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[BKActivityIndicatorHUD HUD] hideHUD];
+    });
+}
+
+- (IBAction)num3:(id)sender {
+    [[BKActivityIndicatorHUD HUD] showActivityIndicatorWithType:BKActivityIndicatorStyleLoading];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[BKActivityIndicatorHUD HUD] hideHUD];
+    });
+}
+
+- (IBAction)Success:(id)sender {
+    [[BKActivityIndicatorHUD HUD] successHUD];
+}
+
+- (IBAction)error:(id)sender {
+    [[BKActivityIndicatorHUD HUD] errorHUD];
+}
+
+- (IBAction)remind:(id)sender {
     [[BKActivityIndicatorHUD HUD] showRemindTextHUDWithText:@"哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈"];
 }
 
