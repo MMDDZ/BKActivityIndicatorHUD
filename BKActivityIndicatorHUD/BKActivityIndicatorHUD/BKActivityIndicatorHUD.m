@@ -38,7 +38,9 @@
     UIView * view = [self getCurrentVC].view;
     view.userInteractionEnabled = NO;
     
-    switch (style) {
+    _activityIndicatorStyle = style;
+    
+    switch (_activityIndicatorStyle) {
         case BKActivityIndicatorStyleScale:
         case BKActivityIndicatorStyleOpacity:
         {
@@ -148,7 +150,7 @@
     circleShapeLayer.lineWidth = 2;
     [bgLayer addSublayer:circleShapeLayer];
     
-    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(circleShapeLayer.bounds.size.width/2.0f, circleShapeLayer.bounds.size.height/2.0f) radius:circleShapeLayer.bounds.size.width/4.0f startAngle:-M_PI_2 endAngle:2*M_PI-M_PI_2 clockwise:YES];
+    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(circleShapeLayer.bounds.size.width/2.0f, circleShapeLayer.bounds.size.height/5.0f*3) radius:circleShapeLayer.bounds.size.width/4.0f startAngle:-M_PI_2 endAngle:2*M_PI-M_PI_2 clockwise:YES];
     circleShapeLayer.path = path.CGPath;
     
     [self shapeLayerCircleAnimation];
@@ -183,7 +185,7 @@
     circleAnimation.repeatCount = 1;
     circleAnimation.removedOnCompletion = NO;
     circleAnimation.fillMode = kCAFillModeForwards;
-    [circleShapeLayer addAnimation:circleAnimation forKey:nil];
+    [circleShapeLayer addAnimation:circleAnimation forKey:@"circleAnimation"];
     
     CABasicAnimation *disappearCircleAnimation = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
     disappearCircleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
@@ -250,7 +252,26 @@
     UIView * view = [self getCurrentVC].view;
     view.userInteractionEnabled = YES;
     
-    [replicatorLayer removeFromSuperlayer];
+    switch (_activityIndicatorStyle) {
+        case BKActivityIndicatorStyleScale:
+        case BKActivityIndicatorStyleOpacity:
+        {
+            [replicatorLayer removeAllAnimations];
+            [replicatorLayer removeFromSuperlayer];
+        }
+            break;
+        case BKActivityIndicatorStyleLoading:
+        {
+            [circleShapeLayer removeAllAnimations];
+            [circleShapeLayer removeFromSuperlayer];
+            [textShapeLayer removeAllAnimations];
+            [textShapeLayer removeFromSuperlayer];
+            [bgLayer removeFromSuperlayer];
+        }
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark - RemindTextHUD
@@ -358,6 +379,7 @@
 {
     if ([circleShapeLayer animationForKey:@"disappearCircleAnimation"] == anim) {
         
+        [circleShapeLayer removeAnimationForKey:@"circleAnimation"];
         [circleShapeLayer removeAnimationForKey:@"disappearCircleAnimation"];
         
         [self shapeLayerCircleAnimation];
