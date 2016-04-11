@@ -103,7 +103,7 @@
             break;
         case BKActivityIndicatorStyleOpacity:
         {
-            [self scaleAnimation];
+            [self opacityAnimation];
         }
             break;
         default:
