@@ -151,23 +151,7 @@
     UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(circleShapeLayer.bounds.size.width/2.0f, circleShapeLayer.bounds.size.height/2.0f) radius:circleShapeLayer.bounds.size.width/4.0f startAngle:-M_PI_2 endAngle:2*M_PI-M_PI_2 clockwise:YES];
     circleShapeLayer.path = path.CGPath;
     
-    CABasicAnimation *circleAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-    circleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    circleAnimation.fromValue = @(0);
-    circleAnimation.toValue = @(1);
-    circleAnimation.duration = 2;
-    circleAnimation.repeatCount = 1;
-    [circleShapeLayer addAnimation:circleAnimation forKey:nil];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        CABasicAnimation *disappearCircleAnimation = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
-        disappearCircleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        disappearCircleAnimation.fromValue = @(0);
-        disappearCircleAnimation.toValue = @(1);
-        disappearCircleAnimation.duration = 2;
-        disappearCircleAnimation.repeatCount = 1;
-        [circleShapeLayer addAnimation:disappearCircleAnimation forKey:nil];
-    });
+    [self shapeLayerCircleAnimation];
     
     textShapeLayer = [CAShapeLayer layer];
     textShapeLayer.fillColor = [UIColor clearColor].CGColor;
@@ -179,7 +163,7 @@
     textAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
     textAnimation.fromValue = @(0);
     textAnimation.toValue = @(1);
-    textAnimation.duration = 3;
+    textAnimation.duration = 2.5;
     textAnimation.repeatCount = MAXFLOAT;
     [textShapeLayer addAnimation:textAnimation forKey:nil];
     
@@ -187,6 +171,31 @@
     CGFloat fontSize = 18.0*view.bounds.size.width/320.0f;
     [attributed addAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:fontSize]} range:NSMakeRange(0, attributed.length)];
     textShapeLayer.path = [self coretextPath:attributed].CGPath;
+}
+
+-(void)shapeLayerCircleAnimation
+{
+    CABasicAnimation *circleAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    circleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    circleAnimation.fromValue = @(0);
+    circleAnimation.toValue = @(1);
+    circleAnimation.duration = 2.5;
+    circleAnimation.repeatCount = 1;
+    circleAnimation.removedOnCompletion = NO;
+    circleAnimation.fillMode = kCAFillModeForwards;
+    [circleShapeLayer addAnimation:circleAnimation forKey:nil];
+    
+    CABasicAnimation *disappearCircleAnimation = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
+    disappearCircleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    disappearCircleAnimation.fromValue = @(0);
+    disappearCircleAnimation.toValue = @(1);
+    disappearCircleAnimation.duration = 1.5;
+    disappearCircleAnimation.repeatCount = 1;
+    disappearCircleAnimation.delegate = self;
+    disappearCircleAnimation.beginTime = CACurrentMediaTime() + 1;
+    disappearCircleAnimation.removedOnCompletion = NO;
+    disappearCircleAnimation.fillMode = kCAFillModeForwards;
+    [circleShapeLayer addAnimation:disappearCircleAnimation forKey:@"disappearCircleAnimation"];
 }
 
 - (UIBezierPath *)coretextPath:(NSMutableAttributedString *)text
@@ -241,7 +250,6 @@
     UIView * view = [self getCurrentVC].view;
     view.userInteractionEnabled = YES;
     
-    [dotLayer removeAllAnimations];
     [replicatorLayer removeFromSuperlayer];
 }
 
@@ -341,6 +349,19 @@
                                        context:nil];
     
     return rect.size;
+}
+
+#pragma mark - CAAnimationDelegate
+//*********************************************************
+
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
+{
+    if ([circleShapeLayer animationForKey:@"disappearCircleAnimation"] == anim) {
+        
+        [circleShapeLayer removeAnimationForKey:@"disappearCircleAnimation"];
+        
+        [self shapeLayerCircleAnimation];
+    }
 }
 
 @end
